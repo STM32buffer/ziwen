@@ -1,0 +1,76 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.21.1.0
+Copyright (C) 2016 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 1, 1, LIC=MPPLD-8QHA2-2Z2W4-FPGJI-6JJC7-7E6RB
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.21a
+Toolchain Path:  D:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 3 (build 300)
+Assembler:       Armasm.exe V5.06 update 3 (build 300)
+Linker/Locator:  ArmLink.exe V5.06 update 3 (build 300)
+Library Manager: ArmAr.exe V5.06 update 3 (build 300)
+Hex Converter:   FromElf.exe V5.06 update 3 (build 300)
+CPU DLL:         SARMCM3.DLL V5.21a
+Dialog DLL:      DCM.DLL V1.13.8.0
+Target DLL:      Segger\JL2CM3.dll V2.99.23.0
+Dialog DLL:      TCM.DLL V1.14.14.0
+ 
+<h2>Project:</h2>
+C:\Users\2297257662\Desktop\×ÔÎÈ\USER\main.uvprojx
+Project File Date:  07/15/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 3 (build 300)', folder: 'D:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Target 1'
+compiling main.c...
+..\MyCode\timer\timer.h(8): warning:  #1-D: last line of file ends without a newline
+  void time2_init();
+..\MyCode\timer\timer.h(8): warning:  #1295-D: Deprecated declaration time2_init - give arg types
+  void time2_init();
+..\MyCode\pwm\pwm.h(5): warning:  #1-D: last line of file ends without a newline
+  void TIM2_PWM_Init(u16 arr, u16 psc);
+..\USER\DRV8874.h(6): warning:  #1295-D: Deprecated declaration DRV8874_Init - give arg types
+  void DRV8874_Init();
+..\USER\DRV8874.h(11): warning:  #1-D: last line of file ends without a newline
+  void motor_control(uint8_t state,uint8_t direction,int speed);
+..\MyCode\schedule\schedule.h(78): warning:  #1-D: last line of file ends without a newline
+  void PID();
+..\MyCode\schedule\schedule.h(78): warning:  #1295-D: Deprecated declaration PID - give arg types
+  void PID();
+GPIO.h(7): warning:  #1-D: last line of file ends without a newline
+  void GPIO_init(void);
+DRV8874.h(6): warning:  #1295-D: Deprecated declaration DRV8874_Init - give arg types
+  void DRV8874_Init();
+DRV8874.h(11): warning:  #1-D: last line of file ends without a newline
+  void motor_control(uint8_t state,uint8_t direction,int speed);
+main.c: 10 warnings, 0 errors
+linking...
+Program Size: Code=38864 RO-data=3792 RW-data=376 ZI-data=2912  
+FromELF: creating hex file...
+"..\OBJ\main.axf" - 0 Error(s), 10 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM::CMSIS:CORE:4.3.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+<h2>Collection of Component include folders:</h2>
+  C:\Users\2297257662\Desktop\×ÔÎÈ\USER\RTE
+  D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
+  D:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.3.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+Build Time Elapsed:  00:00:05
+</pre>
+</body>
+</html>

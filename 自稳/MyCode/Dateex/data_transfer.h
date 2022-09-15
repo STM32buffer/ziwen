@@ -66,7 +66,13 @@ typedef struct
 	uint16_t I;
 	uint16_t D;
 } dt_struct_t;
+typedef struct
+{
+	float Kp;
+	float Ki;
+	float Kd;
 
+}PID_struct_t;
 extern dt_flag_t f;
 extern dt_struct_t info;
 

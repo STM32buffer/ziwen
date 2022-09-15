@@ -20,7 +20,8 @@
 dt_flag_t f;					//需要发送数据的标志
 u8 data_to_send[50];	//发送数据缓存
 u8 checkdata_to_send,checksum_to_send;
-
+PID_struct_t ctrl_Pitch,ctrl_Roll,ctrl_Yaw;
+PID_struct_t ctr2_Pitch,ctr2_Roll,ctr2_Yaw;
 /////////////////////////////////////////////////////////////////////////////////////
 //Send_Data函数是协议中所有发送数据功能使用到的发送函数
 //移植时，用户应根据自身应用的情况，根据使用的通信方式，实现此函数
@@ -191,25 +192,25 @@ void ANO_DT_Data_Exchange(void)
 	else if(f.send_pid1)
 	{
 		f.send_pid1 = 0;
-		ANO_DT_Send_PID(1,0,0,0,
-											0,0,0,
-											0,0,0);
+		ANO_DT_Send_PID(1,ctrl_Roll.Kp  ,ctrl_Roll.Ki  ,ctrl_Roll.Kd,
+											ctrl_Pitch.Kp ,ctrl_Pitch.Ki ,ctrl_Pitch.Kd,
+											ctrl_Yaw.Kp   ,ctrl_Yaw.Ki   ,ctrl_Yaw.Kd    );
 	}	
 /////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_pid2)
 	{
 		f.send_pid2 = 0;
-		ANO_DT_Send_PID(2,0,0,0,
-											0,0,0,
-											0,0,0);
+		ANO_DT_Send_PID(2,ctr2_Roll.Kp  ,ctr2_Roll.Ki  ,ctr2_Roll.Kd,
+											ctr2_Pitch.Kp ,ctr2_Pitch.Ki ,ctr2_Pitch.Kd,
+											ctr2_Yaw.Kp   ,ctr2_Yaw.Ki   ,ctr2_Yaw.Kd );
 	}
 /////////////////////////////////////////////////////////////////////////////////////
 	else if(f.send_pid3)
 	{
 		f.send_pid3 = 0;
-		ANO_DT_Send_PID(3,0,0,0,
-											0,0,0,
-											0,0,0);
+		ANO_DT_Send_PID(3,1,2,3,
+											4,5,6,
+											7,8,9);
 	}
 	else if(f.send_pid4)
 	{
@@ -270,7 +271,7 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 		state=3;
 		RxBuffer[2]=data;
 	}
-	else if(state==3&&data<50)
+	else if(state==3)
 	{
 		state = 4;
 		RxBuffer[3]=data;
@@ -288,7 +289,7 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 	{
 		state = 0;
 		RxBuffer[4+_data_cnt]=data;
-		//ANO_DT_Data_Receive_Anl(RxBuffer,_data_cnt+5);
+		ANO_DT_Data_Receive_Anl(RxBuffer,_data_cnt+5);
 	}
 	else
 		state = 0;
@@ -300,20 +301,20 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 //u16 flash_save_en_cnt = 0;
 //u16 RX_CH[CH_NUM];
 
-//void ANO_DT_Data_Receive_Anl(u8 *data_buf,u8 num)
-//{
-//	u8 sum = 0;
-//	for(u8 i=0;i<(num-1);i++)
-//		sum += *(data_buf+i);
-//	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
-//	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
-//	
-//	if(*(data_buf+2)==0X01)
-//	{
+void ANO_DT_Data_Receive_Anl(u8 *data_buf,u8 num)
+{
+	u8 sum = 0,i;
+	for( i=0;i<(num-1);i++)
+		sum += *(data_buf+i);
+	if(!(sum==*(data_buf+num-1)))		return;		//判断sum
+	if(!(*(data_buf)==0xAA && *(data_buf+1)==0xAF))		return;		//判断帧头
+	
+	if(*(data_buf+2)==0X01)
+	{
 //		if(*(data_buf+4)==0X01)
 //		{
 //			mpu6050.Acc_CALIBRATE = 1;
-//			//mpu6050.Cali_3d = 1;
+//			pu6050.Cali_3d = 1;
 //		}
 //		else if(*(data_buf+4)==0X02)
 //			mpu6050.Gyro_CALIBRATE = 1;
@@ -328,38 +329,38 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 //		}
 //		else if((*(data_buf+4)>=0X021)&&(*(data_buf+4)<=0X26))
 //		{
-//			//acc_3d_calibrate_f = 1;
+//			acc_3d_calibrate_f = 1;
 //		}
 //		else if(*(data_buf+4)==0X20)
 //		{
-//			//acc_3d_step = 0; //退出，6面校准步清0
+//			acc_3d_step = 0; //退出，6面校准步清0
 //		}
-//	}
-//	
-//	if(*(data_buf+2)==0X02)
-//	{
-//		if(*(data_buf+4)==0X01)
-//		{
-//			f.send_pid1 = 1;
-//			f.send_pid2 = 1;
-//			f.send_pid3 = 1;
-//			f.send_pid4 = 1;
-//			f.send_pid5 = 1;
-//			f.send_pid6 = 1;
-//		}
-//		if(*(data_buf+4)==0X02)
-//		{
-//			
-//		}
-//		if(*(data_buf+4)==0XA0)		//读取版本信息
-//		{
-//			f.send_version = 1;
-//		}
-//		if(*(data_buf+4)==0XA1)		//恢复默认参数
-//		{
-//			Para_ResetToFactorySetup();
-//		}
-//	}
+	}
+	
+	if(*(data_buf+2)==0X02)
+	{
+		if(*(data_buf+4)==0X01)
+		{
+			f.send_pid1 = 1;
+			f.send_pid2 = 1;
+			f.send_pid3 = 1;
+			f.send_pid4 = 1;
+			f.send_pid5 = 1;
+			f.send_pid6 = 1;
+		}
+		if(*(data_buf+4)==0X02)
+		{
+			
+		}
+		if(*(data_buf+4)==0XA0)		//读取版本信息
+		{
+			f.send_version = 1;
+		}
+		if(*(data_buf+4)==0XA1)		//恢复默认参数
+		{
+			//Para_ResetToFactorySetup();
+		}
+	}
 
 //	if(*(data_buf+2)==0X03)
 //	{
@@ -378,46 +379,46 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 //		RX_CH[AUX4] = (vs16)(*(data_buf+18)<<8)|*(data_buf+19) ;
 //	}
 
-//	if(*(data_buf+2)==0X10)								//PID1
-//    {
-//        ctrl_1.PID[PIDROLL].kp  = 0.001*( (vs16)(*(data_buf+4)<<8)|*(data_buf+5) );
-//        ctrl_1.PID[PIDROLL].ki  = 0.001*( (vs16)(*(data_buf+6)<<8)|*(data_buf+7) );
-//        ctrl_1.PID[PIDROLL].kd  = 0.001*( (vs16)(*(data_buf+8)<<8)|*(data_buf+9) );
-//        ctrl_1.PID[PIDPITCH].kp = 0.001*( (vs16)(*(data_buf+10)<<8)|*(data_buf+11) );
-//        ctrl_1.PID[PIDPITCH].ki = 0.001*( (vs16)(*(data_buf+12)<<8)|*(data_buf+13) );
-//        ctrl_1.PID[PIDPITCH].kd = 0.001*( (vs16)(*(data_buf+14)<<8)|*(data_buf+15) );
-//        ctrl_1.PID[PIDYAW].kp 	= 0.001*( (vs16)(*(data_buf+16)<<8)|*(data_buf+17) );
-//        ctrl_1.PID[PIDYAW].ki 	= 0.001*( (vs16)(*(data_buf+18)<<8)|*(data_buf+19) );
-//        ctrl_1.PID[PIDYAW].kd 	= 0.001*( (vs16)(*(data_buf+20)<<8)|*(data_buf+21) );
-//				if(f.send_check == 0)
-//				{
-//					f.send_check = 1;
-//					checkdata_to_send = *(data_buf+2);
-//					checksum_to_send = sum;
-//				}
-//			  PID_Para_Init();
-//				flash_save_en_cnt = 1;
-//    }
-//    if(*(data_buf+2)==0X11)								//PID2
-//    {
-//        ctrl_2.PID[PIDROLL].kp  = 0.001*( (vs16)(*(data_buf+4)<<8)|*(data_buf+5) );
-//        ctrl_2.PID[PIDROLL].ki  = 0.001*( (vs16)(*(data_buf+6)<<8)|*(data_buf+7) );
-//        ctrl_2.PID[PIDROLL].kd  = 0.001*( (vs16)(*(data_buf+8)<<8)|*(data_buf+9) );
-//        ctrl_2.PID[PIDPITCH].kp = 0.001*( (vs16)(*(data_buf+10)<<8)|*(data_buf+11) );
-//        ctrl_2.PID[PIDPITCH].ki = 0.001*( (vs16)(*(data_buf+12)<<8)|*(data_buf+13) );
-//        ctrl_2.PID[PIDPITCH].kd = 0.001*( (vs16)(*(data_buf+14)<<8)|*(data_buf+15) );
-//        ctrl_2.PID[PIDYAW].kp 	= 0.001*( (vs16)(*(data_buf+16)<<8)|*(data_buf+17) );
-//        ctrl_2.PID[PIDYAW].ki 	= 0.001*( (vs16)(*(data_buf+18)<<8)|*(data_buf+19) );
-//        ctrl_2.PID[PIDYAW].kd 	= 0.001*( (vs16)(*(data_buf+20)<<8)|*(data_buf+21) );
-//        if(f.send_check == 0)
-//				{
-//					f.send_check = 1;
-//					checkdata_to_send = *(data_buf+2);
-//					checksum_to_send = sum;
-//				}
+	if(*(data_buf+2)==0X10)								//PID1
+    {
+        ctrl_Roll.Kp  = 0.001*( (vs16)(*(data_buf+4)<<8)|*(data_buf+5) );
+        ctrl_Roll.Ki  = 0.001*( (vs16)(*(data_buf+6)<<8)|*(data_buf+7) );
+        ctrl_Roll.Kd  = 0.001*( (vs16)(*(data_buf+8)<<8)|*(data_buf+9) );
+        ctrl_Pitch.Kp = 0.001*( (vs16)(*(data_buf+10)<<8)|*(data_buf+11) );
+        ctrl_Pitch.Ki = 0.001*( (vs16)(*(data_buf+12)<<8)|*(data_buf+13) );
+        ctrl_Pitch.Kd = 0.001*( (vs16)(*(data_buf+14)<<8)|*(data_buf+15) );
+        ctrl_Yaw.Kp  	= 0.001*( (vs16)(*(data_buf+16)<<8)|*(data_buf+17) );
+        ctrl_Yaw.Ki 	= 0.001*( (vs16)(*(data_buf+18)<<8)|*(data_buf+19) );
+        ctrl_Yaw.Kd 	= 0.001*( (vs16)(*(data_buf+20)<<8)|*(data_buf+21) );
+				if(f.send_check == 0)
+				{
+					f.send_check = 1;
+					checkdata_to_send = *(data_buf+2);
+					 checksum_to_send = sum;
+				}
+			  //PID_Para_Init();
+				//flash_save_en_cnt = 1;
+    }
+    if(*(data_buf+2)==0X11)								//PID2
+    {
+        ctr2_Roll.Kp  = 0.001*( (vs16)(*(data_buf+4)<<8)|*(data_buf+5) );
+        ctr2_Roll.Ki  = 0.001*( (vs16)(*(data_buf+6)<<8)|*(data_buf+7) );
+        ctr2_Roll.Kd  = 0.001*( (vs16)(*(data_buf+8)<<8)|*(data_buf+9) );
+        ctr2_Pitch.Kp = 0.001*( (vs16)(*(data_buf+10)<<8)|*(data_buf+11) );
+        ctr2_Pitch.Ki = 0.001*( (vs16)(*(data_buf+12)<<8)|*(data_buf+13) );
+        ctr2_Pitch.Kd = 0.001*( (vs16)(*(data_buf+14)<<8)|*(data_buf+15) );
+        ctr2_Yaw.Kp  	= 0.001*( (vs16)(*(data_buf+16)<<8)|*(data_buf+17) );
+        ctr2_Yaw.Ki 	= 0.001*( (vs16)(*(data_buf+18)<<8)|*(data_buf+19) );
+        ctr2_Yaw.Kd 	= 0.001*( (vs16)(*(data_buf+20)<<8)|*(data_buf+21) );
+        if(f.send_check == 0)
+				{
+					f.send_check = 1;
+					checkdata_to_send = *(data_buf+2);
+					checksum_to_send = sum;
+				}
 //				PID_Para_Init();
 //				flash_save_en_cnt = 1;
-//    }
+    }
 //    if(*(data_buf+2)==0X12)								//PID3
 //    {	
 //        pid_setup.groups.hc_sp.kp  = 0.001*( (vs16)(*(data_buf+4)<<8)|*(data_buf+5) );
@@ -480,7 +481,7 @@ void ANO_DT_Data_Receive_Prepare(u8 data)
 //			checksum_to_send = sum;
 //		}
 //	}
-//}
+}
 
 void ANO_DT_Send_Version(u8 hardware_type, u16 hardware_ver,u16 software_ver,u16 protocol_ver,u16 bootloader_ver)
 {

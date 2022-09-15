@@ -14,3 +14,4 @@
 ..\obj\usart.o: ..\STM32_FWLIB\inc\misc.h
 ..\obj\usart.o: ..\SYSTEM\usart\usart.h
 ..\obj\usart.o: D:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\usart.o: ..\MyCode\Dateex\data_transfer.h

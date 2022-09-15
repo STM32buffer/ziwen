@@ -1,5 +1,6 @@
 #include "sys.h"
 #include "usart.h"	  
+#include "data_transfer.h"
 ////////////////////////////////////////////////////////////////////////////////// 	 
 //如果使用ucos,则包括下面的头文件即可.
 #if SYSTEM_SUPPORT_UCOS
@@ -149,7 +150,7 @@ void uart_init(u32 bound){
 }
 
 void USART1_IRQHandler(void)                	//串口1中断服务程序
-	{
+{
 	u8 Res;
 #ifdef OS_TICKS_PER_SEC	 	//如果时钟节拍数定义了,说明要使用ucosII了.
 	OSIntEnter();    
@@ -178,7 +179,8 @@ void USART1_IRQHandler(void)                	//串口1中断服务程序
 					}		 
 				}
 			}  
-			Bluetoot_Receive_isr1(Res);			
+			Bluetoot_Receive_isr1(Res);	
+			ANO_DT_Data_Receive_Prepare(Res);			
      } 
 		//??(????)??
 	/*else if(USART_GetITStatus(USART1,USART_IT_TXE))
@@ -214,10 +216,7 @@ void UART_SendBytes(const uint8_t *dt, uint32_t n)
         USART1->DR = *dt++;
         while (!BITBAND_REG(USART1->SR, 6));
     }
-		USART1_DataSend(0x0D);
-		USART1_DataSend(0x0A);
 
-		
 }
 /**********************************************************
 Function Name:Usart2_Send
